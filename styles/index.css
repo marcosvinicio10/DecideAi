@@ -558,3 +558,15 @@ main {
   .card-config { max-width: 100%; }
   .card-perfil .perfil-avatar { width: 70px; height: 70px; }
 } 
+
+.logo-site {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 0.7em;
+  vertical-align: middle;
+}
+
+footer .logo-site {
+  margin: 0;
+} 

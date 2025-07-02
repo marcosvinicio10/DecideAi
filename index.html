@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Decide Aí</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="/styles/index.css"/>
+  <link rel="icon" type="image/png" href="/src/assets/favicon.png" />
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <!-- Lucide Icons CDN -->
@@ -13,6 +14,7 @@
 <body>
   <header>
     <div class="user-info">
+      <img src="/src/assets/favicon.png" alt="Logo Decide Aí" class="logo-site"/>
       <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar" class="avatar"/>
       <span class="bairro">Bairro: Vila Nova</span>
     </div>
@@ -33,7 +35,10 @@
     <button data-page="projetos"><i data-lucide="handshake"></i><span>Projetos</span></button>
     <button data-page="perfil"><i data-lucide="user"></i><span>Perfil</span></button>
   </nav>
-  <script src="app.js"></script>
+  <footer style="width:100%;display:flex;justify-content:center;align-items:center;padding:0.7em 0 0.5em 0;">
+    <img src="/src/assets/favicon.png" alt="Logo Decide Aí" class="logo-site" style="width:32px;height:32px;"/>
+  </footer>
+  <script src="/controllers/app.js"></script>
   <script>
     lucide.createIcons();
   </script>
