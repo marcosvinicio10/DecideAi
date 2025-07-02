@@ -96,15 +96,26 @@ const pages = {
   home: () => `
     <div class="card card-enquete">
       <div class="card-title"><i data-lucide="flame"></i>Enquete do dia</div>
-      <div style="margin-bottom:0.7rem;">${state.votacoes[0].titulo}</div>
-      <div id="enquete-opcoes">
-        ${state.votacoes[0].opcoes.map((op,i)=>`<button class="btn btn-outline btn-enquete" data-idx="${i}">${op}</button>`).join('')}
+      <div style="font-size:1.2rem;font-weight:bold;margin-bottom:0.7rem;">${state.votacoes[0].titulo}</div>
+      <div id="enquete-opcoes" style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+        ${state.votacoes[0].opcoes.map((op,i)=>`<button class="btn btn-enquete" data-idx="${i}">${op}</button>`).join('')}
       </div>
-      <div style="color:var(--secondary); font-size:0.95rem;">⏳ Faltam ${state.votacoes[0].tempo}</div>
+      <div style="color:#fff; font-size:0.95rem;">⏳ Faltam ${state.votacoes[0].tempo}</div>
     </div>
     <div class="card card-feed-votacoes">
       <div class="card-title"><i data-lucide="bar-chart-2"></i>Votações em andamento</div>
-      ${state.votacoes.map(v=>`<div class="feed-item-votacao"><strong>${v.titulo}</strong> <span style="color:var(--secondary);font-size:0.9rem;">(${v.tempo})</span> <button class="btn btn-outline btn-sm" onclick="showVotacaoDetail(${v.id})">Votar</button></div>`).join('')}
+      ${state.votacoes.map(v=>`
+        <div class="feed-item-votacao">
+          <div>
+            <div style="font-weight:bold;">${v.titulo}</div>
+            <div class="chip primary">${v.tempo} restantes</div>
+          </div>
+          <div style="min-width:120px;">
+            <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.round((v.votos[0]/(v.votos.reduce((a,b)=>a+b,0)||1))*100)}%"></div></div>
+            <button class="btn btn-outline btn-sm" onclick="showVotacaoDetail(${v.id})">Votar</button>
+          </div>
+        </div>
+      `).join('')}
     </div>
     <div class="card card-feed-projetos">
       <div class="card-title"><i data-lucide="handshake"></i>Projetos ativos</div>
@@ -112,9 +123,10 @@ const pages = {
         ${state.projetos.filter(p=>p.status==='em andamento').map(p=>`
           <div class="feed-item-projeto">
             <img src="${p.fotos[0]||'https://placehold.co/48x48'}" class="feed-projeto-img"/>
-            <div>
-              <strong>${p.nome}</strong>
-              <div style="font-size:0.9rem;color:var(--success);">🟢 Em andamento</div>
+            <div style="flex:1;">
+              <div style="font-weight:bold;">${p.nome}</div>
+              <div class="chip success">🟢 Em andamento</div>
+              <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.min(p.apoiadores*10,100)}%"></div></div>
               <button class="btn btn-success btn-sm" onclick="showProjetoDetail(${p.id})">Apoiar</button>
             </div>
           </div>
@@ -123,11 +135,11 @@ const pages = {
     </div>
     <div class="card card-feed-avisos">
       <div class="card-title"><i data-lucide="megaphone"></i>Avisos importantes</div>
-      <ul>
-        <li>Mutirão de limpeza sábado às 9h</li>
-        <li>Nova votação sobre iluminação pública</li>
-        <li>Evento: Feira de Saúde domingo</li>
-      </ul>
+      <div style="display:flex;flex-direction:column;gap:0.5em;">
+        <div class="chip danger">Mutirão de limpeza sábado às 9h</div>
+        <div class="chip primary">Nova votação sobre iluminação pública</div>
+        <div class="chip">Evento: Feira de Saúde domingo</div>
+      </div>
     </div>
     <div class="card card-gamificacao">
       <div class="card-title"><i data-lucide="award"></i>Seu Engajamento</div>
@@ -140,32 +152,32 @@ const pages = {
         </div>
       </div>
       <div style="margin-top:0.7rem;">
-        <div style="background:var(--primary);height:8px;border-radius:4px;width:${Math.min(state.gamificacao.pontos/15,100)}%;"></div>
+        <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.min(state.gamificacao.pontos/15,100)}%"></div></div>
       </div>
     </div>
     <div class="card card-feed-ranking">
       <div class="card-title"><i data-lucide="trending-up"></i>Ranking dos bairros</div>
       <ol style="margin-left:1.2rem;">
-        <li>Vila Nova 🥇</li>
-        <li>Central 🥈</li>
-        <li>Jardim das Flores 🥉</li>
+        <li><span class="chip primary">Vila Nova 🥇</span></li>
+        <li><span class="chip">Central 🥈</span></li>
+        <li><span class="chip">Jardim das Flores 🥉</span></li>
       </ol>
     </div>
     <div class="card card-feed-eventos">
       <div class="card-title"><i data-lucide="calendar"></i>Próximos eventos</div>
-      <ul>
-        <li>Mutirão de limpeza - Sábado 9h</li>
-        <li>Feira de Saúde - Domingo 14h</li>
-        <li>Reunião do Conselho - Segunda 19h</li>
-      </ul>
+      <div style="display:flex;flex-direction:column;gap:0.5em;">
+        <div class="chip primary">Mutirão de limpeza - Sábado 9h</div>
+        <div class="chip">Feira de Saúde - Domingo 14h</div>
+        <div class="chip">Reunião do Conselho - Segunda 19h</div>
+      </div>
     </div>
     <div class="card card-feed-atividades">
       <div class="card-title"><i data-lucide="activity"></i>Atividades recentes</div>
-      <ul>
-        <li>Você apoiou o projeto "Mutirão de Limpeza"</li>
-        <li>Você votou em "Praça ou quadra no terreno?"</li>
-        <li>Comentou: "Ótima iniciativa!" em "Mutirão de Limpeza"</li>
-      </ul>
+      <div class="timeline">
+        <div class="timeline-item"><span class="chip success">Hoje</span> Você apoiou o projeto <b>Mutirão de Limpeza</b></div>
+        <div class="timeline-item"><span class="chip">Ontem</span> Você votou em <b>Praça ou quadra no terreno?</b></div>
+        <div class="timeline-item"><span class="chip">2 dias</span> Comentou: "Ótima iniciativa!" em <b>Mutirão de Limpeza</b></div>
+      </div>
     </div>
   `,
   mapa: () => `
@@ -478,9 +490,8 @@ function animateHighlight(el) {
   setTimeout(() => el.classList.remove('highlight-anim'), 600);
 }
 
-// Adicionar listeners e animações após renderização da Home
+// Após renderizar a Home
 function afterHomeRender() {
-  // Animação ao votar na enquete do dia
   document.querySelectorAll('.btn-enquete').forEach(btn => {
     btn.addEventListener('click', function() {
       animateHighlight(this);
@@ -492,7 +503,6 @@ function afterHomeRender() {
       }, 800);
     });
   });
-  // Animação hover/click nos botões
   document.querySelectorAll('.btn').forEach(btn => {
     btn.addEventListener('mousedown', () => animateHighlight(btn));
   });
