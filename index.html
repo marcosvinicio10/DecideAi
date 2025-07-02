@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Decide Aí</title>
+  <link rel="stylesheet" href="style.css"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <header>
+    <div class="user-info">
+      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar" class="avatar"/>
+      <span class="bairro">Bairro: Vila Nova</span>
+    </div>
+    <button class="notif-btn" title="Notificações">
+      <i data-lucide="bell"></i>
+    </button>
+  </header>
+  <main id="main-content">
+    <!-- Conteúdo das telas será injetado aqui -->
+  </main>
+  <button class="fab" id="fab-btn" title="Criar">
+    <i data-lucide="plus"></i>
+  </button>
+  <nav class="bottom-nav">
+    <button data-page="home" class="active"><i data-lucide="home"></i><span>Home</span></button>
+    <button data-page="mapa"><i data-lucide="map"></i><span>Mapa</span></button>
+    <button data-page="votar"><i data-lucide="bar-chart-2"></i><span>Votar</span></button>
+    <button data-page="projetos"><i data-lucide="handshake"></i><span>Projetos</span></button>
+    <button data-page="perfil"><i data-lucide="user"></i><span>Perfil</span></button>
+  </nav>
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html> 
