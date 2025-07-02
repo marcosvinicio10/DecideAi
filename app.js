@@ -202,62 +202,81 @@ const pages = {
     </div>
   `,
   votar: () => `
-    <div class="card">
-      <div class="card-title"><i data-lucide="bar-chart-2"></i>Votações Populares</div>
-      ${state.votacoes.map(v=>`
-        <div style="margin-bottom:1.2rem;">
-          <strong>${v.titulo}</strong>
-          <div style="font-size:0.95rem; color:var(--secondary);">⏳ Faltam ${v.tempo}</div>
-          <button class="btn btn-outline" onclick="showVotacaoDetail(${v.id})">Ver detalhes</button>
+    ${state.votacoes.map(v=>`
+      <div class="card card-votacao">
+        <div class="card-title"><i data-lucide="bar-chart-2"></i>${v.titulo}</div>
+        <div style="color:#555; margin-bottom:0.5em;">${v.descricao}</div>
+        <div class="chip primary">${v.tempo} restantes</div>
+        <div class="votacao-opcoes">
+          ${v.opcoes.map((op,i)=>`<button class="votacao-opcao-btn" onclick="vote(${v.id},${i},this)">${op}</button>`).join('')}
         </div>
-      `).join('')}
-      <button class="btn btn-primary" onclick="openCreateVotacaoModal()"><i data-lucide="plus"></i>Criar votação</button>
-    </div>
+        <div class="votacao-resultado">
+          ${v.opcoes.map((op,i)=>{
+            const total = v.votos.reduce((a,b)=>a+b,0);
+            const pct = total ? Math.round((v.votos[i]/total)*100) : 0;
+            return `<div>${op} <span style='float:right;'>${pct}%</span></div><div class='votacao-bar'><div class='votacao-bar-inner' style='width:${pct}%;'></div></div>`;
+          }).join('')}
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="showVotacaoDetail(${v.id})">Ver detalhes</button>
+      </div>
+    `).join('')}
+    <button class="btn btn-primary" onclick="openCreateVotacaoModal()"><i data-lucide="plus"></i>Criar votação</button>
   `,
   projetos: () => `
-    <div class="card">
-      <div class="card-title"><i data-lucide="handshake"></i>Projetos Comunitários</div>
-      ${state.projetos.map(p=>`
-        <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem;">
-          <img src="${p.fotos[0]||'https://placehold.co/60x60'}" alt="Projeto" style="width:60px;height:60px;border-radius:12px;object-fit:cover;">
-          <div>
-            <strong>${p.nome}</strong>
-            <div style="color:${p.status==='em andamento'?'var(--success)':'var(--danger)'};font-size:0.9rem;">${p.status==='em andamento'?'🟢 Em andamento':'🔴 Pendente'}</div>
-            <button class="btn btn-success" style="margin-top:0.3rem;" onclick="showProjetoDetail(${p.id})">Ver detalhes</button>
-          </div>
+    ${state.projetos.map(p=>`
+      <div class="card card-projeto">
+        <div class="card-title"><i data-lucide="handshake"></i>${p.nome}</div>
+        <img src="${p.fotos[0]||'https://placehold.co/600x160'}" class="projeto-capa"/>
+        <div class="projeto-status chip ${p.status==='em andamento'?'success':'danger'}">${p.status==='em andamento'?'🟢 Em andamento':'🔴 Pendente'}</div>
+        <div style="color:#555; margin-bottom:0.5em;">${p.descricao}</div>
+        <div class="projeto-apoiadores">
+          <span style="font-size:0.95em;">Apoiadores:</span>
+          <img src="https://randomuser.me/api/portraits/men/33.jpg" class="projeto-apoiador-avatar">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" class="projeto-apoiador-avatar">
+          <img src="https://randomuser.me/api/portraits/men/45.jpg" class="projeto-apoiador-avatar">
+          <span class="chip">+${p.apoiadores}</span>
         </div>
-      `).join('')}
-      <button class="btn btn-primary" onclick="openCreateProjetoModal()"><i data-lucide="plus"></i>Novo projeto</button>
-    </div>
+        <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.min(p.apoiadores*10,100)}%"></div></div>
+        <button class="btn btn-success btn-sm" onclick="alert('Apoiado!')">Apoiar</button>
+        <button class="btn btn-secondary btn-sm" onclick="alert('Compartilhar projeto!')">Compartilhar</button>
+        <div class="projeto-comentarios">
+          <div style="font-weight:bold;">Comentários:</div>
+          ${p.comentarios.map(c=>`<div class="projeto-comentario"><b>${c.usuario}:</b> ${c.texto}</div>`).join('')}
+          <input type='text' id='comentario-projeto-${p.id}' placeholder='Comente...' style='width:80%;padding:0.3rem;border-radius:8px;border:1px solid #eee;margin-top:0.5rem;'>
+          <button class='btn btn-outline btn-sm' onclick='addComentarioProjeto(${p.id})'>Enviar</button>
+        </div>
+      </div>
+    `).join('')}
+    <button class="btn btn-primary" onclick="openCreateProjetoModal()"><i data-lucide="plus"></i>Novo projeto</button>
   `,
   perfil: () => `
-    <div class="card" style="align-items:center;">
-      <img src="${state.usuario.foto}" class="avatar" style="width:70px;height:70px;">
-      <div style="font-family:var(--font-title);font-size:1.2rem;font-weight:bold;">${state.usuario.nome}</div>
-      <div style="color:var(--secondary);font-size:1rem;">${state.usuario.bairro}</div>
-      <div style="margin:0.5rem 0;">${state.usuario.bio}</div>
-      <div style="margin:1rem 0;width:100%;">
+    <div class="card card-perfil">
+      <img src="${state.usuario.foto}" class="perfil-avatar">
+      <div class="perfil-nome">${state.usuario.nome}</div>
+      <div class="perfil-bairro">${state.usuario.bairro}</div>
+      <div class="perfil-bio">${state.usuario.bio}</div>
+      <div style="margin:1em 0;width:100%;">
         <div style="font-size:0.95rem;">Engajamento <span style="float:right;">${state.usuario.nivel} 🥇</span></div>
-        <div style="background:var(--primary);height:8px;border-radius:4px;width:90%;margin-bottom:0.5rem;"></div>
+        <div class="progress-bar"><div class="progress-bar-inner" style="width:90%"></div></div>
         <div style="font-size:0.95rem;">Votações <span style="float:right;">${state.usuario.votos}</span></div>
-        <div style="background:var(--secondary);height:8px;border-radius:4px;width:60%;margin-bottom:0.5rem;"></div>
+        <div class="progress-bar"><div class="progress-bar-inner" style="width:60%"></div></div>
         <div style="font-size:0.95rem;">Projetos <span style="float:right;">${state.usuario.projetos}</span></div>
-        <div style="background:var(--success);height:8px;border-radius:4px;width:30%;"></div>
+        <div class="progress-bar"><div class="progress-bar-inner" style="width:30%"></div></div>
         <div style="font-size:0.95rem;">Problemas mapeados <span style="float:right;">${state.usuario.problemas}</span></div>
-        <div style="background:var(--danger);height:8px;border-radius:4px;width:20%;"></div>
+        <div class="progress-bar"><div class="progress-bar-inner" style="width:20%"></div></div>
       </div>
-      <div style="margin-bottom:1rem;">
-        <span style="font-size:0.95rem;">Selos: ${state.gamificacao.selos.map(s=>`<span style='margin-right:0.3rem;'>🏅${s}</span>`).join('')}</span>
+      <div class="perfil-selos">
+        ${state.gamificacao.selos.map(s=>`<span class='perfil-selo'>🏅${s}</span>`).join('')}
       </div>
       <button class="btn btn-secondary" onclick="openConfigModal()">Configurações</button>
     </div>
-    <div class="card">
-      <div class="card-title"><i data-lucide="activity"></i>Atividades</div>
-      <ul>
-        <li>Votações participadas: ${state.usuario.votos}</li>
-        <li>Projetos criados: ${state.usuario.projetos}</li>
-        <li>Problemas mapeados: ${state.usuario.problemas}</li>
-      </ul>
+    <div class="card card-feed-atividades">
+      <div class="card-title"><i data-lucide="activity"></i>Atividades recentes</div>
+      <div class="timeline">
+        <div class="timeline-item"><span class="chip success">Hoje</span> Você apoiou o projeto <b>Mutirão de Limpeza</b></div>
+        <div class="timeline-item"><span class="chip">Ontem</span> Você votou em <b>Praça ou quadra no terreno?</b></div>
+        <div class="timeline-item"><span class="chip">2 dias</span> Comentou: "Ótima iniciativa!" em <b>Mutirão de Limpeza</b></div>
+      </div>
     </div>
   `
 };
@@ -287,10 +306,12 @@ window.showVotacaoDetail = function(id) {
   `);
   lucide.createIcons();
 }
-window.vote = function(votacaoId, opcaoIdx) {
+window.vote = function(votacaoId, opcaoIdx, btn) {
   const v = state.votacoes.find(v=>v.id===votacaoId);
   v.votos[opcaoIdx]++;
-  showVotacaoDetail(votacaoId);
+  btn.classList.add('selected');
+  confettiAnimation(btn.parentElement);
+  setTimeout(()=>showPage('votar'), 900);
 }
 window.showProjetoDetail = function(id) {
   const p = state.projetos.find(p=>p.id===id);
@@ -316,10 +337,10 @@ window.showProjetoDetail = function(id) {
   lucide.createIcons();
 }
 window.addComentarioProjeto = function(id) {
-  const input = document.getElementById('comentario-projeto');
+  const input = document.getElementById('comentario-projeto-'+id);
   if(input.value.trim()) {
     state.projetos.find(p=>p.id===id).comentarios.push({usuario: state.usuario.nome, texto: input.value});
-    showProjetoDetail(id);
+    showPage('projetos');
   }
 }
 window.showMarkerDetail = function(id) {
@@ -419,14 +440,29 @@ window.openFilterModal = function() {
 }
 window.openConfigModal = function() {
   openModal(`
-    <div class='card'>
+    <div class='card card-config'>
       <div class='card-title'><i data-lucide="settings"></i>Configurações</div>
-      <div>
-        <label>Idioma: <select id='config-idioma'><option value='pt-BR'>Português</option><option value='en'>English</option></select></label>
-        <br><label><input type='checkbox' id='config-notif' ${state.usuario.config.notificacoes?'checked':''}/> Notificações</label>
-        <br><label>Privacidade: <select id='config-priv'><option value='pública'>Pública</option><option value='privada'>Privada</option></select></label>
-      </div>
-      <button class='btn btn-primary' onclick='salvarConfig()'>Salvar</button>
+      <form class='config-form' onsubmit='salvarConfig();return false;'>
+        <label>Idioma:
+          <select id='config-idioma'>
+            <option value='pt-BR'>Português</option>
+            <option value='en'>English</option>
+          </select>
+        </label>
+        <label>Notificações:
+          <span class='switch'>
+            <input type='checkbox' id='config-notif' ${state.usuario.config.notificacoes?'checked':''}/>
+            <span class='slider'></span>
+          </span>
+        </label>
+        <label>Privacidade:
+          <select id='config-priv'>
+            <option value='pública'>Pública</option>
+            <option value='privada'>Privada</option>
+          </select>
+        </label>
+        <button class='btn btn-primary' type='submit'>Salvar</button>
+      </form>
     </div>
   `);
   lucide.createIcons();
@@ -442,17 +478,31 @@ window.salvarConfig = function() {
 // Notificações
 function renderNotificacoes() {
   return `
-    <div class='card'>
+    <div class='card card-notificacoes'>
       <div class='card-title'><i data-lucide="bell"></i>Notificações</div>
-      <ul>
-        ${state.notificacoes.map(n=>`<li style='${n.lida?'color:#aaa;':'font-weight:bold;'}'>${n.texto}</li>`).join('')}
-      </ul>
+      <div class='notificacao-list'>
+        ${state.notificacoes.map(n=>`
+          <div class='notificacao-item ${n.lida ? 'read' : 'unread'}' onclick='marcarNotificacaoLida(${n.id})'>
+            <i data-lucide="dot"></i> ${n.texto}
+          </div>
+        `).join('')}
+      </div>
+      <button class='btn-mark-all' onclick='marcarTodasNotificacoes()'>Marcar todas como lidas</button>
     </div>
   `;
 }
 window.showNotificacoes = function() {
   openModal(renderNotificacoes());
   lucide.createIcons();
+}
+window.marcarNotificacaoLida = function(id) {
+  const n = state.notificacoes.find(n=>n.id===id);
+  if(n) n.lida = true;
+  showNotificacoes();
+}
+window.marcarTodasNotificacoes = function() {
+  state.notificacoes.forEach(n=>n.lida=true);
+  showNotificacoes();
 }
 
 document.querySelector('.notif-btn').addEventListener('click', showNotificacoes);
